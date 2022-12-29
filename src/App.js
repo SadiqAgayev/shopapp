@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Badge, Col, Container, Row } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import CategoryList from "./components/CategoryList";
 import Navi from "./components/Navi";
 import ProductList from "./components/ProductList";
@@ -8,14 +8,17 @@ export default class App extends Component {
   state = {
     categories: [],
     currentCategory: "",
+    products: [],
   };
 
   changeCategory = (category) => {
     this.setState({ currentCategory: category.categoryName });
+    this.getProducts(category.id);
   };
 
   componentDidMount() {
-    this.getCategories()
+    this.getCategories();
+    this.getProducts()
   }
 
   getCategories = () => {
@@ -23,6 +26,17 @@ export default class App extends Component {
       .then((response) => response.json())
       .then((responseJson) => this.setState({ categories: responseJson }));
   };
+
+  getProducts = (categoryId) => {
+    let url = "http://localhost:3000/products";
+    if (categoryId) {
+      url += "?categoryId=" + categoryId;
+    }
+    fetch(url)
+      .then((response) => response.json())
+      .then((responseData) => this.setState({ products: responseData }));
+  };
+
   render() {
     return (
       <div className="App">
@@ -32,18 +46,14 @@ export default class App extends Component {
           </Row>
           <Row className="mt-2">
             <Col xs="4">
-              <Badge color="danger" style={{ width: "100%" }}>
-                <CategoryList
-                  categories={this.state.categories}
-                  currentCategory={this.state.currentCategory}
-                  changeCategory={this.changeCategory}
-                />
-              </Badge>
+              <CategoryList
+                categories={this.state.categories}
+                currentCategory={this.state.currentCategory}
+                changeCategory={this.changeCategory}
+              />
             </Col>
             <Col xs="8">
-              <Badge color="primary" style={{ width: "100%" }}>
-                <ProductList />
-              </Badge>
+              <ProductList products={this.state.products} />
             </Col>
           </Row>
         </Container>
