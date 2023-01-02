@@ -29,7 +29,12 @@ export default class ProductList extends Component {
                   <td>{product.unitPrice}</td>
                   <td>{product.unitsInStock}</td>
                   <td>
-                    <button className="btn btn-success">Add</button>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => this.props.addToCart(product)}
+                    >
+                      Add
+                    </button>
                   </td>
                 </tr>
               );

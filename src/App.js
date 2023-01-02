@@ -9,6 +9,7 @@ export default class App extends Component {
     categories: [],
     currentCategory: "",
     products: [],
+    cart: [],
   };
 
   changeCategory = (category) => {
@@ -18,7 +19,7 @@ export default class App extends Component {
 
   componentDidMount() {
     this.getCategories();
-    this.getProducts()
+    this.getProducts();
   }
 
   getCategories = () => {
@@ -37,12 +38,38 @@ export default class App extends Component {
       .then((responseData) => this.setState({ products: responseData }));
   };
 
+  addToCart = (product) => {
+    let newCart = this.state.cart;
+    let addedItem = newCart.find((c) => c.product.id === product.id);
+    if (addedItem) {
+      addedItem.quantity += 1;
+    } else {
+      newCart.push({ product: product, quantity: 1 });
+    }
+
+    this.setState({ cart: newCart });
+  };
+
+  removeFromCart = (product) => {
+    let newCart = this.state.cart.filter(
+      (ci) => ci.product.id !== product.product.id
+    );
+
+    this.setState({ cart: newCart });
+  };
+
   render() {
     return (
       <div className="App">
         <Container>
           <Row>
-            <Navi color="dark" dark={true} expand="sm" />
+            <Navi
+              color="dark"
+              dark={true}
+              expand="sm"
+              cart={this.state.cart}
+              removeFromCart={this.removeFromCart}
+            />
           </Row>
           <Row className="mt-2">
             <Col xs="4">
@@ -53,7 +80,10 @@ export default class App extends Component {
               />
             </Col>
             <Col xs="8">
-              <ProductList products={this.state.products} />
+              <ProductList
+                products={this.state.products}
+                addToCart={this.addToCart}
+              />
             </Col>
           </Row>
         </Container>
